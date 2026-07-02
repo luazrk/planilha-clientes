@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Clientes habilitados pelo HUB</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Fonte Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #eaf3ff;
+            min-height: 100vh;
+        }
+
+        .container {
+            margin-top: 50px;
+            max-width: 1200px;
+        }
+
+        .titulo {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1e3a8a;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.12);
+            border-left: 6px solid #2563eb;
+        }
+
+        .btn-adicionar {
+            margin-bottom: 20px;
+        }
+
+        .table {
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        .table td,
+        .table th {
+            text-align: center;
+            vertical-align: middle;
+            border: none;
+        }
+
+        .cabecalho-card {
+            background: #ffffff;
+            color: #1e3a8a;
+            padding: 12px;
+            border-radius: 15px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #dbeafe;
+        }
+
+        tbody tr {
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+        }
+
+        input,
+        select {
+            text-align: center;
+        }
+
+        .custom-select {
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .bg-white {
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container bg-white p-4">
+
+    <h2 class="titulo">📋 Gestão de Clientes habilitados pelo HUB</h2>
+
+    <div class="text-center">
+        <button class="btn btn-primary btn-adicionar" onclick="adicionarCliente()">
+            ➕ Adicionar Cliente
+        </button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+
+            <thead>
+                <tr>
+                    <th><div class="cabecalho-card">👤 Nome do Cliente</div></th>
+                    <th><div class="cabecalho-card">📅 Data de acompanhamento</div></th>
+                    <th><div class="cabecalho-card">📊 Status</div></th>
+                    <th><div class="cabecalho-card">📝 Observações</div></th>
+                    <th><div class="cabecalho-card">⚙️ Ações</div></th>
+                </tr>
+            </thead>
+
+            <tbody id="tabelaClientes">
+
+                <tr>
+                    <td>
+                        <input type="text" class="form-control" placeholder="Nome do Cliente">
+                    </td>
+
+                    <td>
+                        <input type="date" class="form-control">
+                    </td>
+
+                    <td>
+                        <select class="form-select custom-select border-success text-success"
+                                onchange="mudarStatus(this)">
+                            <option value="acompanhar">Acompanhar</option>
+                            <option value="suspender">Suspender</option>
+                        </select>
+                    </td>
+
+                    <td>
+                        <input type="text" class="form-control" placeholder="Adicionar observação">
+                    </td>
+
+                    <td>
+                        <button class="btn btn-danger btn-sm"
+                                onclick="removerCliente(this)">
+                            Excluir
+                        </button>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+
+
+
+
+<script>
+
+function salvarDados() {
+
+    const clientes = [];
+
+    document.querySelectorAll("#tabelaClientes tr").forEach(linha => {
+
+        clientes.push({
+            nome: linha.cells[0].querySelector("input").value,
+            data: linha.cells[1].querySelector("input").value,
+            status: linha.cells[2].querySelector("select").value,
+            observacao: linha.cells[3].querySelector("input").value
+        });
+
+    });
+
+    localStorage.setItem("clientes", JSON.stringify(clientes));
+}
+
+function mudarStatus(selectElement) {
+
+    selectElement.classList.remove(
+        'border-success',
+        'text-success',
+        'border-danger',
+        'text-danger'
+    );
+
+    if (selectElement.value === 'acompanhar') {
+
+        selectElement.classList.add(
+            'border-success',
+            'text-success'
+        );
+
+    } else {
+
+        selectElement.classList.add(
+            'border-danger',
+            'text-danger'
+        );
+
+    }
+
+    salvarDados();
+}
+
+function adicionarCliente() {
+
+    const tabela = document.getElementById('tabelaClientes');
+
+    const novaLinha = `
+        <tr>
+            <td>
+                <input type="text" class="form-control"
+                       placeholder="Nome do Cliente"
+                       oninput="salvarDados()">
+            </td>
+
+            <td>
+                <input type="date"
+                       class="form-control"
+                       onchange="salvarDados()">
+            </td>
+
+            <td>
+                <select class="form-select custom-select border-success text-success"
+                        onchange="mudarStatus(this)">
+                    <option value="acompanhar">Acompanhar</option>
+                    <option value="suspender">Suspender</option>
+                </select>
+            </td>
+
+            <td>
+                <input type="text"
+                       class="form-control"
+                       placeholder="Adicionar observação"
+                       oninput="salvarDados()">
+            </td>
+
+            <td>
+                <button class="btn btn-danger btn-sm"
+                        onclick="removerCliente(this)">
+                    Excluir
+                </button>
+            </td>
+        </tr>
+    `;
+
+    tabela.insertAdjacentHTML('beforeend', novaLinha);
+
+    salvarDados();
+}
+
+function removerCliente(botao) {
+
+    botao.closest('tr').remove();
+
+    salvarDados();
+}
+
+function carregarDados() {
+
+    const clientes = JSON.parse(
+        localStorage.getItem("clientes")
+    ) || [];
+
+    const tabela = document.getElementById("tabelaClientes");
+
+    tabela.innerHTML = "";
+
+    clientes.forEach(cliente => {
+
+        const linha = `
+            <tr>
+
+                <td>
+                    <input type="text"
+                           class="form-control"
+                           value="${cliente.nome}"
+                           oninput="salvarDados()">
+                </td>
+
+                <td>
+                    <input type="date"
+                           class="form-control"
+                           value="${cliente.data}"
+                           onchange="salvarDados()">
+                </td>
+
+                <td>
+                    <select class="form-select custom-select
+                    ${cliente.status === 'acompanhar'
+                        ? 'border-success text-success'
+                        : 'border-danger text-danger'}"
+                    onchange="mudarStatus(this)">
+
+                        <option value="acompanhar"
+                        ${cliente.status === 'acompanhar' ? 'selected' : ''}>
+                            Acompanhar
+                        </option>
+
+                        <option value="suspender"
+                        ${cliente.status === 'suspender' ? 'selected' : ''}>
+                            Suspender
+                        </option>
+
+                    </select>
+                </td>
+
+                <td>
+                    <input type="text"
+                           class="form-control"
+                           value="${cliente.observacao}"
+                           oninput="salvarDados()">
+                </td>
+
+                <td>
+                    <button class="btn btn-danger btn-sm"
+                            onclick="removerCliente(this)">
+                        Excluir
+                    </button>
+                </td>
+
+            </tr>
+        `;
+
+        tabela.insertAdjacentHTML('beforeend', linha);
+
+    });
+
+    if (clientes.length === 0) {
+        adicionarCliente();
+    }
+}
+
+window.onload = carregarDados;
+
+</script>
+</body>
+</html>
